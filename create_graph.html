@@ -2,9 +2,6 @@
   <head>
     <title>Generate list of coordinates</title>
     <script>
-      // set the size of the dot
-      const dotSize = 5;
-
       // list of coordinates
       let coordinates = [];
 
@@ -12,9 +9,9 @@
       function drawDot(x, y) {
         let canvas = document.getElementById("canvas");
         let context = canvas.getContext("2d");
-        context.fillStyle = "#000000";
+        context.fillStyle = "#FF0000";
         context.beginPath();
-        context.arc(x, y, dotSize, 0, 2 * Math.PI);
+        context.arc(x+10, y+10, 5, 0, 2 * Math.PI);
         context.fill();
       }
 
@@ -22,9 +19,7 @@
       function removeDot(x, y) {
         let canvas = document.getElementById("canvas");
         let context = canvas.getContext("2d");
-        // let x = mouseX - (12 * dotSize) / 2;
-        // let y = mouseY - (12 * dotSize) / 2;
-        context.clearRect(x-(12 * dotSize) / 2, y-(12 * dotSize) / 2, 12*dotSize, 12*dotSize);
+        context.clearRect(x, y, 20, 20);
       }
 
       // function to get mouse coordinates
@@ -40,8 +35,8 @@
       function mouseClick(event) {
         let canvas = document.getElementById("canvas");
         let mousePosition = getMousePosition(canvas, event);
-        let x = mousePosition.x;
-        let y = mousePosition.y;
+        let x = Math.floor(mousePosition.x / 20) * 20;
+        let y = Math.floor(mousePosition.y / 20) * 20;
 
         // left-click
         if (event.button == 0) {
@@ -67,17 +62,34 @@
           });
           coordinates.splice(index, 1);
         }
+
+        // update list of coordinates
+        document.getElementById("list").innerHTML = JSON.stringify(coordinates, null, 2);
       }
+
       // add event listener for mouse click
       document.addEventListener("mousedown", mouseClick);
     </script>
   </head>
   <body>
     <h1>Click to generate list of coordinates</h1>
-    <canvas id="canvas" width="800" height="800"></canvas>
+    <canvas id="canvas" width="360" height="380"></canvas>
     <p>List of coordinates:</p>
     <pre id="list"></pre>
     <script>
+      // create the grid
+      let canvas = document.getElementById("canvas");
+      let context = canvas.getContext("2d");
+      for (let x = 0; x < 360; x += 20) {
+        for (let y = 0; y < 380; y += 20) {
+          context.fillStyle = "#FFFFFF";
+          context.fillRect(x, y, 20, 20);
+          context.fillStyle = "#FF0000";
+          context.fillRect(x+8, y+8, 4, 4);
+        }
+      }
+
+      // update list of coordinates
       document.getElementById("list").innerHTML = JSON.stringify(coordinates, null, 2);
       document.addEventListener("mouseup", function(event) {
         document.getElementById("list").innerHTML = JSON.stringify(coordinates, null, 2);
