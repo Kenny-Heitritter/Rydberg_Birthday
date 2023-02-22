@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <title>Generate list of coordinates</title>
+    <script>
+      // set the size of the dot
+      const dotSize = 5;
+
+      // list of coordinates
+      let coordinates = [];
+
+      // function to draw a dot
+      function drawDot(x, y) {
+        let canvas = document.getElementById("canvas");
+        let context = canvas.getContext("2d");
+        context.fillStyle = "#000000";
+        context.beginPath();
+        context.arc(x, y, dotSize, 0, 2 * Math.PI);
+        context.fill();
+      }
+
+      // function to remove a dot
+      function removeDot(x, y) {
+        let canvas = document.getElementById("canvas");
+        let context = canvas.getContext("2d");
+        // let x = mouseX - (12 * dotSize) / 2;
+        // let y = mouseY - (12 * dotSize) / 2;
+        context.clearRect(x-(12 * dotSize) / 2, y-(12 * dotSize) / 2, 12*dotSize, 12*dotSize);
+      }
+
+      // function to get mouse coordinates
+      function getMousePosition(canvas, event) {
+        let rect = canvas.getBoundingClientRect();
+        return {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        };
+      }
+
+      // function to handle mouse click
+      function mouseClick(event) {
+        let canvas = document.getElementById("canvas");
+        let mousePosition = getMousePosition(canvas, event);
+        let x = mousePosition.x;
+        let y = mousePosition.y;
+
+        // left-click
+        if (event.button == 0) {
+          // if control key is held, remove the dot
+          if (event.ctrlKey) {
+            removeDot(x, y);
+            let index = coordinates.findIndex(coordinate => {
+              return coordinate.x === x && coordinate.y === y;
+            });
+            coordinates.splice(index, 1);
+          }
+          // else draw the dot
+          else {
+            drawDot(x, y);
+            coordinates.push({ x, y });
+          }
+        }
+        // right-click
+        else if (event.button == 2) {
+          removeDot(x, y);
+          let index = coordinates.findIndex(coordinate => {
+            return coordinate.x === x && coordinate.y === y;
+          });
+          coordinates.splice(index, 1);
+        }
+      }
+      // add event listener for mouse click
+      document.addEventListener("mousedown", mouseClick);
+    </script>
+  </head>
+  <body>
+    <h1>Click to generate list of coordinates</h1>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <p>List of coordinates:</p>
+    <pre id="list"></pre>
+    <script>
+      document.getElementById("list").innerHTML = JSON.stringify(coordinates, null, 2);
+      document.addEventListener("mouseup", function(event) {
+        document.getElementById("list").innerHTML = JSON.stringify(coordinates, null, 2);
+      });
+    </script>
+  </body>
+</html>
